@@ -1,2 +1,2 @@
 # Practica-de-GitFlow
-Cambios de ale
+Cambios en la rama de Release ( 03/11/2026 )
