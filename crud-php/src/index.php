@@ -56,9 +56,8 @@ try {
     <div class="contenedor-centrado">
       <button type="button" onclick="window.location.href='usuarios/listar.php'">Consultar clientes</button>
       <button type="button" onclick="window.location.href='usuarios/crear.php'">Inserta un cliente</button>
-      <button type="button" onclick="window.location.href='select-productos.php'">Consultar productos</button>
-      <button type="button" onclick="window.location.href='insert-producto.php'">Inserta un producto</button>
-      <button type="button" onclick="window.location.href='productos.php'">Consultar e insertar productos</button>
+      <button type="button" onclick="window.location.href='usuarios/editar.php'">Editar un cliente</button>
+      <!-- <button type="button" onclick="window.location.href='usuarios/eliminar.php'">Eliminar un cliente</button>
     </div>
   </div>
 
