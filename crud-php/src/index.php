@@ -48,7 +48,7 @@ try {
 
 <body>
   <div class="content">
-    <h1 class="titulo">Ejercicio 1 - PHP y select</h1>
+    <h1 class="titulo">Tienda Electrolitrona</h1>
     
     <!-- Aquí imprimimos el resultado de la comprobación PHP -->
     <?= $mensaje_conexion ?>
