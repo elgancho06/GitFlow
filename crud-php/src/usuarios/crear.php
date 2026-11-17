@@ -1,31 +1,31 @@
-
 <?php
+// Inicializamos las variables para los mensajes y valores.
+$mensaje = "";
+$esError = false;
+$nombre = "";
+$email = "";
+
 // Comprobamos si el formulario se ha enviado mediante POST.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Comprobamos que se hayan recibido los campos nombre y email.
     if (isset($_POST["nombre"]) && isset($_POST["email"])) {
 
-        // Recogemos el nombre enviado desde el formulario.
+        // Recogemos los datos enviados desde el formulario.
         $nombre = trim($_POST["nombre"]);
-
-        // Recogemos el email enviado desde el formulario.
         $email = trim($_POST["email"]);
 
         // Comprobamos que los campos no estén vacíos.
         if ($nombre === "" || $email === "") {
+            $mensaje = "Debes rellenar todos los campos.";
+            $esError = true;
 
-            // Mostramos un mensaje si falta información.
-            echo "Debes rellenar todos los campos.";
-
-        // Comprobamos que el correo electrónico sea válido.
+            // Comprobamos que el correo electrónico sea válido.
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-            // Mostramos un error si el email no tiene formato válido.
-            echo "El correo electrónico no es válido.";
+            $mensaje = "El correo electrónico no es válido.";
+            $esError = true;
 
         } else {
-
             // Incluimos la clase de conexión a MariaDB.
             require_once __DIR__ . "/../config/DatabaseService.php";
 
@@ -33,106 +33,205 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $databaseService = new DatabaseService();
 
             try {
-
                 // Obtenemos la conexión PDO con MariaDB.
                 $connection = $databaseService->getConnection();
 
                 // Preparamos la consulta SQL para insertar el cliente.
-                // Los parámetros evitan concatenar datos del usuario.
-                $query = "INSERT INTO clientes (nombre, email)
-                          VALUES (:nombre, :email)";
-
-                // Preparamos la consulta SQL mediante PDO.
+                $query = "INSERT INTO clientes (nombre, email) VALUES (:nombre, :email)";
                 $stmt = $connection->prepare($query);
 
-                // Asociamos el parámetro :nombre a la variable $nombre.
+                // Asociamos los parámetros.
                 $stmt->bindParam(":nombre", $nombre);
-
-                // Asociamos el parámetro :email a la variable $email.
                 $stmt->bindParam(":email", $email);
 
                 // Ejecutamos la consulta SQL en MariaDB.
                 $resultadoEjecucion = $stmt->execute();
 
-                // Comprobamos si la inserción se ha realizado.
                 if ($resultadoEjecucion) {
-
-                    // Mostramos un mensaje de confirmación.
-                    echo "Cliente insertado correctamente.";
-
+                    $mensaje = "Cliente insertado correctamente.";
+                    $esError = false;
+                    // Limpiamos los campos tras el éxito si se desea
+                    $nombre = "";
+                    $email = "";
                 } else {
-
-                    // Mostramos un mensaje si la consulta falla.
-                    echo "No se ha podido insertar el cliente.";
+                    $mensaje = "No se ha podido insertar el cliente.";
+                    $esError = true;
                 }
 
-            // Capturamos posibles errores de conexión o SQL.
             } catch (PDOException $e) {
-
-                // No mostramos detalles internos de la base de datos.
-                echo "Se ha producido un error al guardar el cliente.";
+                $mensaje = "Se ha producido un error al guardar el cliente.";
+                $esError = true;
             }
         }
-
     } else {
-
-        // Mostramos un error si faltan los campos del formulario.
-        echo "No has enviado la información suficiente.";
+        $mensaje = "No has enviado la información suficiente.";
+        $esError = true;
     }
 }
 ?>
-
-<!-- Declaramos que el documento utiliza HTML5. -->
 <!DOCTYPE html>
-
-<!-- Indicamos que el idioma de la página es español. -->
 <html lang="es">
 
 <head>
-    <!-- Configuramos la codificación para admitir tildes y ñ. -->
     <meta charset="UTF-8">
-
-    <!-- Establecemos el título de la pestaña del navegador. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear cliente</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --border-color: #d1d5db;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+            --error-border: #f87171;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --success-border: #4ade80;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+            border: 1px solid transparent;
+        }
+
+        .alert.error {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border-color: var(--error-border);
+        }
+
+        .alert.success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-border);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: -0.5rem;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Mostramos el encabezado de la página. -->
-    <h1>Crear cliente</h1>
 
-    <!-- Creamos el formulario que envía los datos mediante POST
-         al mismo archivo PHP. -->
-    <form method="post" action="crear.php">
+    <div class="container">
+        <h1>Crear Cliente</h1>
 
-        <!-- Etiqueta que identifica el campo nombre. -->
-        <label for="nombre">Nombre:</label>
+        <?php if ($mensaje !== ""): ?>
+            <div role="<?= $esError ? "alert" : "status" ?>" class="alert <?= $esError ? "error" : "success" ?>">
+                <?= htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8") ?>
+            </div>
+        <?php endif; ?>
 
-        <!-- Campo para introducir el nombre del cliente. -->
-        <input type="text" id="nombre" name="nombre" required>
+        <form method="post" action="crear.php">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($nombre, ENT_QUOTES, "UTF-8") ?>"
+                required placeholder="Ej. Juan Pérez">
 
-        <!-- Salto de línea para separar los campos. -->
-        <br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<?= htmlspecialchars($email, ENT_QUOTES, "UTF-8") ?>"
+                required placeholder="juan@correo.com">
 
-        <!-- Etiqueta que identifica el correo electrónico. -->
-        <label for="email">Email:</label>
+            <button type="submit">Guardar cliente</button>
+        </form>
 
-        <!-- Campo para introducir el correo del cliente. -->
-        <input type="email" id="email" name="email" required>
+        <a class="back-link" href="listar.php">&larr; Ver clientes</a>
+    </div>
 
-        <!-- Salto de línea para separar los campos. -->
-        <br>
-
-        <!-- Botón que envía el formulario al servidor. -->
-        <button type="submit">Guardar cliente</button>
-
-    <!-- Cerramos el formulario HTML. -->
-    </form>
-
-    <!-- Enlace para consultar los clientes registrados. -->
-    <a href="listar.php">Ver clientes</a>
-
-<!-- Cerramos el cuerpo del documento. -->
 </body>
 
-<!-- Cerramos el documento HTML. -->
 </html>
