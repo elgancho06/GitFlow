@@ -4,7 +4,7 @@ try {
     require_once 'config/DatabaseService.php';
     $databaseService = new DatabaseService();
     $connection = $databaseService->getConnection();
-    
+
     if ($connection) {
         $mensaje_conexion = "<p style='color: #4CAF50; font-weight: bold;'>✅ Conexión a la base de datos: ¡EXITOSA!</p>";
     }
@@ -14,6 +14,7 @@ try {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +38,7 @@ try {
             height: 100vh;
             margin: 0;
         }
-        
+
         button {
             margin: 5px;
             padding: 10px;
@@ -47,19 +48,20 @@ try {
 </head>
 
 <body>
-  <div class="content">
-    <h1 class="titulo">Tienda Electrolitrona</h1>
-    
-    <!-- Aquí imprimimos el resultado de la comprobación PHP -->
-    <?= $mensaje_conexion ?>
+    <div class="content">
+        <h1 class="titulo">Tienda Electrolitrona</h1>
 
-    <div class="contenedor-centrado">
-      <button type="button" onclick="window.location.href='usuarios/listar.php'">Consultar clientes</button>
-      <button type="button" onclick="window.location.href='usuarios/crear.php'">Inserta un cliente</button>
-      <button type="button" onclick="window.location.href='usuarios/editar.php'">Editar un cliente</button>
-      <!-- <button type="button" onclick="window.location.href='usuarios/eliminar.php'">Eliminar un cliente</button>
+        <!-- Aquí imprimimos el resultado de la comprobación PHP -->
+            <?= $mensaje_conexion ?>
+
+        <div class="contenedor-centrado">
+            <button type="button" onclick="window.location.href='usuarios/listar.php'">Consultar clientes</button>
+            <button type="button" onclick="window.location.href='usuarios/crear.php'">Inserta un cliente</button>
+            <button type="button" onclick="window.location.href='usuarios/editar.php'">Editar un cliente</button>
+            <button type="button" onclick="window.location.href='usuarios/eliminar.php'">Eliminar un cliente</button>
+        </div>
     </div>
-  </div>
 
 </body>
+
 </html>
