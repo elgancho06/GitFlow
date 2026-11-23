@@ -91,12 +91,6 @@ try {
             border-color: var(--success-border);
         }
 
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-        }
-
         button {
             background-color: var(--primary-color);
             color: white;
@@ -132,8 +126,19 @@ try {
 </head>
 
 <body>
-    <div class="container">
-        <h1>Tienda ElectroLitrona</h1>
+    <div class="content">
+        <h1 class="titulo">Tienda Electrolitrona</h1>
+
+        <!-- Aquí imprimimos el resultado de la comprobación PHP -->
+            <?= $mensaje_conexion ?>
+
+        <div class="contenedor-centrado">
+            <button type="button" onclick="window.location.href='usuarios/listar.php'">Consultar clientes</button>
+            <button type="button" onclick="window.location.href='usuarios/crear.php'">Inserta un cliente</button>
+            <button type="button" onclick="window.location.href='usuarios/editar.php'">Editar un cliente</button>
+            <button type="button" onclick="window.location.href='usuarios/eliminar.php'">Eliminar un cliente</button>
+        </div>
+    </div>
 
         <!-- Aquí imprimimos el resultado de la comprobación PHP con formato adaptado -->
         <?= $mensaje_conexion ?>
